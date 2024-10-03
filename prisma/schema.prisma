@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Role {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  create      Boolean @default(false)
+  read        Boolean @default(false)
+  update      Boolean @default(false)
+  delete      Boolean @default(false)
+  menu_access String
+  User        User[]
+}
+
+model User {
+  id                String    @id @default(uuid())
+  name              String
+  username          String
+  email             String
+  no_phone          String?
+  password          String
+  image             String?
+  reff_code         String
+  regis_reff_code   String?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime?
+  email_verified_at DateTime?
+  phone_verified_at DateTime?
+
+  role   Role   @relation(fields: [roleId], references: [id])
+  roleId String
+}
+
+model LiveChat {
+  id        String    @id
+  is_active Boolean   @default(true)
+  Messages  Message[]
+}
+
+enum MessageType {
+  SISTEM
+  CS
+  GUEST
+}
+
+model Message {
+  id          String      @id @default(uuid())
+  body        String      @db.Text
+  image       String?
+  created_at  DateTime    @default(now())
+  MessageType MessageType @default(SISTEM)
+
+  LiveChat   LiveChat? @relation(fields: [liveChatId], references: [id])
+  liveChatId String?
+}
